@@ -45,6 +45,11 @@ def create_pool(batch_client, job_id, vm_size, vm_count):
     # Create container configuration, prefetching Docker images from the container registry
     container_conf = batch.models.ContainerConfiguration(
                      container_registries =[container_registry])
+
+    vm_config = batch.models.VirtualMachineConfiguration(
+                image_reference=image_ref_to_use,
+                container_configuration=container_conf,
+                node_agent_sku_id='batch.node.ubuntu 20.04')
             
     # pool_info = batchmodels.PoolInformation(
     #         auto_pool_specification=batchmodels.AutoPoolSpecification(
@@ -55,16 +60,16 @@ def create_pool(batch_client, job_id, vm_size, vm_count):
     
     new_pool = batch.models.PoolAddParameter(
                 id=config['Pool']['id'],
-                virtual_machine_configuration=batch.models.VirtualMachineConfiguration(
-                                              image_reference=image_ref_to_use,
-                                              container_configuration=container_conf,
-                                              node_agent_sku_id='batch.node.ubuntu 20.04'),
+                virtual_machine_configuration=vm_config,
                 vm_size=config['Pool']['poolvmsize'],
                 target_dedicated_nodes=config['Pool']['poolvmcount'])
+
     batch_client.pool.add(new_pool)
 
-    job = batchmodels.JobAddParameter(id=job_id, 
-                                      pool_info=batch.models.PoolInformation(pool_id=config['Pool']['id']))
+    pool_info= batch.models.PoolInformation(pool_id=config['Pool']['id'])
+    job = batchmodels.JobAddParameter(
+          id=job_id, 
+          pool_info=pool_info)
     batch_client.job.add(job)
 
     image = config['Registry']['image_rabbitmq']
