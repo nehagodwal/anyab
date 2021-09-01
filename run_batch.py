@@ -107,7 +107,7 @@ def run_task(batch_client, job, task_id, image, container_run_optns=None):
     batch_client.task.add(job_id=job.id, task=task)
 
 def create_blob_container(container_name):
-    connection_string = config['storage']['connectionstring']
+    connection_string = config['Storage']['connectionstring']
     container_client = ContainerClient.from_connection_string(conn_str=connection_string, container_name=container_name)
     container_client.create_container()
 
