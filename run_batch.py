@@ -154,7 +154,7 @@ def execute_rabbitmq():
     batch_client.config.retry_policy.retries = 5
     job_id = helpers.generate_unique_resource_name("mlos")
     pool_id = config['Pool']['id']
-    container_name = f'{pool_id}_{job_id}'
+    container_name = f'{pool_id}-{job_id}'
     print("container name: ", container_name)
     create_blob_container(container_name)
 
