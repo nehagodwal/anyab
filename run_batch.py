@@ -62,7 +62,8 @@ def create_pool(batch_client, job_id, vm_size, vm_count):
                 id=config['Pool']['id'],
                 virtual_machine_configuration=vm_config,
                 vm_size=config['Pool']['poolvmsize'],
-                target_dedicated_nodes=config['Pool']['poolvmcount'])
+                target_dedicated_nodes=config['Pool']['poolvmcount'],
+                enable_inter_node_communication=config['Pool']['enable_inter_node_communication'])
 
     batch_client.pool.add(new_pool)
 
