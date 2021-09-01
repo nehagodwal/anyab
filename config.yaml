@@ -1,7 +1,7 @@
 Pool:
   shoulddeletejob: false 
   poolvmsize: standard_a3 #standard_d3_v2
-  poolvmcount: 3
+  poolvmcount: 1
   id: apitestpool
   displayname: 
   enable_inter_node_communication: True
