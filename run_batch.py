@@ -8,6 +8,7 @@ import azure.batch.batch_service_client as batch
 import azure.batch.batch_auth as batchauth
 import azure.batch.models as batchmodels
 from azure.storage.blob import ContainerClient
+from azure.storage.blob import BlobServiceClient
 
 import helpers
 
@@ -108,11 +109,20 @@ def run_task(batch_client, job, task_id, image, container_run_optns=None):
 
 def create_blob_container(container_name):
     connection_string = config['Storage']['connectionstring']
-    container_client = ContainerClient.from_connection_string(
-                       conn_str="DefaultEndpointsProtocol=https;AccountName=mlosexecutor;AccountKey=y0aJT2XxDzqV0wVoQL+VinOQD0/IN/fnHIDhIM9v/NTxSemrdyu9XM2G19w4xh6wSAOXI5tSxug8wufnFHKUmQ==;EndpointSuffix=core.windows.net", 
-                       container_name=container_name)
-    container_client.create_container()
+    blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+    # Instantiate a new ContainerClient
+    container_client = blob_service_client.get_container_client(container_name)
 
+    try:
+        # Create new container in the service
+        container_client.create_container()
+
+        # List containers in the storage account
+        list_response = blob_service_client.list_containers()
+        print(list_response)
+    except:
+        print("could not connect to blob storage")
+    
 def execute_rabbitmq():
     """Executes the sample with the specified configurations.
     :param global_config: The global configuration to use.
