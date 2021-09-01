@@ -110,7 +110,7 @@ def execute_rabbitmq():
 
     batch_client = batch.BatchServiceClient(
         credentials,
-        batch_service_url=batch_service_url)
+        base_url=batch_service_url)
 
     # Retry 5 times -- default is 3
     batch_client.config.retry_policy.retries = 5
