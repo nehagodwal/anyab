@@ -80,7 +80,7 @@ def create_pool(batch_client, job_id, vm_size, vm_count):
 def run_task(batch_client, job, task_id, image, container_run_optns):
     task_container_settings = batch.models.TaskContainerSettings(
     image_name=image,
-    container_run_options="-p 5672:5672 -p 15672:15672")
+    container_run_options='-p 5672:5672 -p 15672:15672')
 
     task = batchmodels.TaskAddParameter(
         id=task_id,
