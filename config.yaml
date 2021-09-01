@@ -21,7 +21,7 @@ Registry:
   username: nhmlos
   password: 4IRZYyp3QbqFKdL5A/UQeu1l1J3mZOv9
   image_driver: nhmlos.azurecr.io/nhmlos/testdriver
-  image_worker: nhmlos.azurecr.io/nhmlos/worker
+  image_worker: nhmlos.azurecr.io/nhmlos/testworker
   image_rabbitmq: nhmlos.azurecr.io/nhmlos/rabbitmq
   image_user: nhmlos.azurecr.io/nhmlos/user_task
 
