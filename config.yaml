@@ -17,11 +17,11 @@ Storage:
   storageaccountsuffix: 
 
 Registry:
-  registryserver:
-  username:
-  password:
-  image_driver: 
-  image_worker:
-  image_rabbitmq: 
-  image_user:
+  registryserver: nhmlos.azurecr.io
+  username: nhmlos
+  password: 4IRZYyp3QbqFKdL5A/UQeu1l1J3mZOv9
+  image_driver: nhmlos.azurecr.io/nhmlos/driver
+  image_worker: nhmlos.azurecr.io/nhmlos/worker
+  image_rabbitmq: nhmlos.azurecr.io/nhmlos/rabbitmq
+  image_user: nhmlos.azurecr.io/nhmlos/user_task
 
