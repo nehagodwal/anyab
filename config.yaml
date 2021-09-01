@@ -1,6 +1,6 @@
 Pool:
   shoulddeletejob: false 
-  poolvmsize: standard_a4_v2 #standard_d3_v2
+  poolvmsize: standard_a3 #standard_d3_v2
   poolvmcount: 3
   id: apitestpool
   displayname: 
