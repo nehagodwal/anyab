@@ -108,7 +108,9 @@ def run_task(batch_client, job, task_id, image, container_run_optns=None):
 
 def create_blob_container(container_name):
     connection_string = config['Storage']['connectionstring']
-    container_client = ContainerClient.from_connection_string(conn_str=connection_string, container_name=container_name)
+    container_client = ContainerClient.from_connection_string(
+                       conn_str="DefaultEndpointsProtocol=https;AccountName=mlosexecutor;AccountKey=y0aJT2XxDzqV0wVoQL+VinOQD0/IN/fnHIDhIM9v/NTxSemrdyu9XM2G19w4xh6wSAOXI5tSxug8wufnFHKUmQ==;EndpointSuffix=core.windows.net", 
+                       container_name=container_name)
     container_client.create_container()
 
 def execute_rabbitmq():
@@ -143,6 +145,7 @@ def execute_rabbitmq():
     job_id = helpers.generate_unique_resource_name("mlos")
     pool_id = config['Pool']['id']
     container_name = f'{pool_id}_{job_id}'
+    print("container name: ", container_name)
     create_blob_container(container_name)
 
     try:
