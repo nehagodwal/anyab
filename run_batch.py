@@ -4,7 +4,7 @@ import os
 import yaml
 from logging import getLogger
 
-import azure.batch._batch_service_client as batch
+import azure.batch.batch_service_client as batch
 import azure.batch.batch_auth as batchauth
 import azure.batch.models as batchmodels
 
@@ -63,7 +63,8 @@ def create_pool(batch_client, job_id, vm_size, vm_count):
                 target_dedicated_nodes=config['Pool']['poolvmcount'])
     batch_client.pool.add(new_pool)
 
-    job = batchmodels.JobAddParameter(id=job_id, pool_info=new_pool)
+    job = batchmodels.JobAddParameter(id=job_id, 
+                                      pool_info=batch.models.PoolInformation(pool_id=config['Pool']['id']))
     batch_client.job.add(job)
 
     image = config['Registry']['image_rabbitmq']
@@ -96,21 +97,20 @@ def execute_rabbitmq():
     batch_account_name = config['Batch']['batchaccountname']
     batch_service_url = config['Batch']['batchserviceurl']
 
-    should_delete_job = config['POOL']['shoulddeletejob']
-    pool_vm_size = config['POOL']['poolvmsize']
-    pool_vm_count = config['POOL']['poolvmcount']
+    should_delete_job = config['Pool']['shoulddeletejob']
+    pool_vm_size = config['Pool']['poolvmsize']
+    pool_vm_count = config['Pool']['poolvmcount']
 
     # Print the settings we are running with
-    helpers.print_configuration(config)
-    helpers.print_configuration(config)
-
+    print(config)
+    
     credentials = batchauth.SharedKeyCredentials(
         batch_account_name,
         batch_account_key)
 
     batch_client = batch.BatchServiceClient(
         credentials,
-        batch_url=batch_service_url)
+        batch_service_url=batch_service_url)
 
     # Retry 5 times -- default is 3
     batch_client.config.retry_policy.retries = 5
