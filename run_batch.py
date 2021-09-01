@@ -2,7 +2,7 @@
 import datetime
 import os
 import yaml
-from logging import getLogger
+from logging import exception, getLogger
 
 import azure.batch.batch_service_client as batch
 import azure.batch.batch_auth as batchauth
@@ -121,7 +121,7 @@ def create_blob_container(container_name):
         list_response = blob_service_client.list_containers()
         print(list_response)
     except:
-        print("could not connect to blob storage")
+        raise Exception(exception)
     
 def execute_rabbitmq():
     """Executes the sample with the specified configurations.
