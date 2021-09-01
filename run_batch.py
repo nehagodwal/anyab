@@ -72,12 +72,25 @@ def create_pool(batch_client, job_id, vm_size, vm_count):
           pool_info=pool_info)
     batch_client.job.add(job)
 
+    # Rabbitmq
     image = config['Registry']['image_rabbitmq']
     task_suffix = image.split('/')[-1]
-    task_id = f'{job_id}_{task_suffix}' 
-    run_task(batch_client, job, task_id, image, '-p 5672:5672 -p 15672:15672')
+    #task_id = f'{job_id}_{task_suffix}' 
+    run_task(batch_client, job, task_suffix, image, '-p 5672:5672 -p 15672:15672')
 
-def run_task(batch_client, job, task_id, image, container_run_optns):
+    # Worker
+    image = config['Registry']['image_worker']
+    task_suffix = image.split('/')[-1]
+    run_task(batch_client, job, task_suffix, image)
+
+    # Driver
+    image = config['Registry']['image_driver']
+    task_suffix = image.split('/')[-1]
+    run_task(batch_client, job, task_suffix, image)
+
+    
+def run_task(batch_client, job, task_id, image, container_run_optns=None):
+    task_id = f'{job.id}_{task_id}'
     task_container_settings = batch.models.TaskContainerSettings(
                               image_name=image,
                               container_run_options=container_run_optns
