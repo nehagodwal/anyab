@@ -64,12 +64,15 @@ def create_pool(batch_client, job_id, vm_size, vm_count):
                 id=config['Pool']['id'],
                 virtual_machine_configuration=vm_config,
                 vm_size=config['Pool']['poolvmsize'],
-                target_dedicated_nodes=config['Pool']['poolvmcount'],
-                enable_inter_node_communication=config['Pool']['enable_inter_node_communication'])
+                target_dedicated_nodes=config['Pool']['poolvmcount']
+                )
 
     batch_client.pool.add(new_pool)
 
-    pool_info= batch.models.PoolInformation(pool_id=config['Pool']['id'])
+    pool_info= batch.models.PoolInformation(
+               pool_id=config['Pool']['id'],
+               enable_inter_node_communication=config['Pool']['enable_inter_node_communication'])
+
     job = batchmodels.JobAddParameter(
           id=job_id, 
           pool_info=pool_info)
@@ -152,7 +155,7 @@ def execute_rabbitmq():
 
     # Retry 5 times -- default is 3
     batch_client.config.retry_policy.retries = 5
-    job_id = helpers.generate_unique_resource_name("mlos")
+    job_id = helpers.generate_unique_resource_name("job")
     pool_id = config['Pool']['id']
     container_name = f'{pool_id}-{job_id}'
     print("container name: ", container_name)
