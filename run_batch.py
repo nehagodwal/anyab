@@ -75,17 +75,16 @@ def create_pool(batch_client, job_id, vm_size, vm_count):
     image = config['Registry']['image_rabbitmq']
     task_suffix = image.split('/')[-1]
     task_id = f'{job_id}_{task_suffix}' 
-    run_task(batch_client, job, task_id, image, "-p 5672:5672 -p 15672:15672")
+    run_task(batch_client, job, task_id, image, '-p 5672:5672 -p 15672:15672')
 
 def run_task(batch_client, job, task_id, image, container_run_optns):
     task_container_settings = batch.models.TaskContainerSettings(
                               image_name=image,
-                              container_run_options='-p 5672:5672 -p 15672:15672'
+                              container_run_options=container_run_optns
                               )
 
     task = batchmodels.TaskAddParameter(
         id=task_id,
-        command_line='/bin/sh -c \"echo \'hello world\' > $AZ_BATCH_TASK_WORKING_DIR/output.txt\"',
         container_settings=task_container_settings
     )
 
