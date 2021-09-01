@@ -21,32 +21,68 @@ def create_pool(batch_client, job_id, vm_size, vm_count):
     :param str job_id: The id of the job to create.
     """
 
-    cloud_service_config = batchmodels.CloudServiceConfiguration(
-        os_family='5')
-    pool_info = batchmodels.PoolInformation(
-        auto_pool_specification=batchmodels.AutoPoolSpecification(
-            auto_pool_id_prefix="HelloWorld",
-            pool=batchmodels.PoolSpecification(
-                vm_size=vm_size,
-                target_dedicated_nodes=vm_count,
-                cloud_service_configuration=cloud_service_config),
-            keep_alive=False,
-            pool_lifetime_option=batchmodels.PoolLifetimeOption.job))
+    # cloud_service_config = batchmodels.CloudServiceConfiguration(
+    #     os_family='5')
 
-    job = batchmodels.JobAddParameter(id=job_id, pool_info=pool_info)
+    # pool_spec = batchmodels.PoolSpecification(
+    #             vm_size=vm_size,
+    #             target_dedicated_nodes=vm_count,
+    #             cloud_service_configuration=cloud_service_config,
+    #             enable_inter_node_communication=True)
 
+    image_ref_to_use = batch.models.ImageReference(
+                       publisher='microsoft-azure-batch',
+                       offer='ubuntu-server-container',
+                       sku='20-04-lts',
+                       version='latest')
+
+    # Specify a container registry
+    container_registry = batch.models.ContainerRegistry(
+                         registry_server=config['Registry']['registryserver'],
+                         user_name=config['Registry']['username'],
+                         password=config['Registry']['password'])
+    
+    # Create container configuration, prefetching Docker images from the container registry
+    container_conf = batch.models.ContainerConfiguration(
+                     container_registries =[container_registry])
+            
+    # pool_info = batchmodels.PoolInformation(
+    #         auto_pool_specification=batchmodels.AutoPoolSpecification(
+    #         auto_pool_id_prefix="HelloWorld",
+    #         pool=pool_spec,
+    #         keep_alive=False,
+    #         pool_lifetime_option=batchmodels.PoolLifetimeOption.job))
+    
+    new_pool = batch.models.PoolAddParameter(
+                id=config['Pool']['id'],
+                virtual_machine_configuration=batch.models.VirtualMachineConfiguration(
+                                              image_reference=image_ref_to_use,
+                                              container_configuration=container_conf,
+                                              node_agent_sku_id='batch.node.ubuntu 20.04'),
+                vm_size=config['Pool']['poolvmsize'],
+                target_dedicated_nodes=config['Pool']['poolvmcount'])
+    batch_client.pool.add(new_pool)
+
+    job = batchmodels.JobAddParameter(id=job_id, pool_info=new_pool)
     batch_client.job.add(job)
-    run_task(batch_client=batch_client, job=job)
 
-def run_task(batch_client, job):
+    image = config['Registry']['image_rabbitmq']
+    task_suffix = image.split('/')[-1]
+    task_id = f'{job_id}_{task_suffix}' 
+    run_task(batch_client, job, task_id, image, "-p 5672:5672 -p 15672:15672")
+
+def run_task(batch_client, job, task_id, image, container_run_optns):
+    task_container_settings = batch.models.TaskContainerSettings(
+    image_name=image,
+    container_run_options=container_run_optns)
+
     task = batchmodels.TaskAddParameter(
-        id="HelloWorld",
-        command_line=helpers.wrap_commands_in_shell(
-            'windows', ['echo Hello world from the Batch Hello world sample!'])
+        id=task_id,
+        command_line='/bin/sh -c \"echo \'hello world\'',
+        container_settings=task_container_settings
     )
 
     batch_client.task.add(job_id=job.id, task=task)
-
 
 def execute_rabbitmq():
     """Executes the sample with the specified configurations.
@@ -60,9 +96,9 @@ def execute_rabbitmq():
     batch_account_name = config['Batch']['batchaccountname']
     batch_service_url = config['Batch']['batchserviceurl']
 
-    should_delete_job = config['DEFAULT']['shoulddeletejob']
-    pool_vm_size = config['DEFAULT']['poolvmsize']
-    pool_vm_count = config['DEFAULT']['poolvmcount']
+    should_delete_job = config['POOL']['shoulddeletejob']
+    pool_vm_size = config['POOL']['poolvmsize']
+    pool_vm_count = config['POOL']['poolvmcount']
 
     # Print the settings we are running with
     helpers.print_configuration(config)
@@ -78,7 +114,7 @@ def execute_rabbitmq():
 
     # Retry 5 times -- default is 3
     batch_client.config.retry_policy.retries = 5
-    job_id = helpers.generate_unique_resource_name("HelloWorld")
+    job_id = helpers.generate_unique_resource_name("mlos")
 
     try:
         create_pool(

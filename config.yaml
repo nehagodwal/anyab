@@ -1,14 +1,27 @@
-DEFAULT:
-  shoulddeletejob: true
-  poolvmsize: STANDARD_D1_V2
-  poolvmcount: 1
+Pool:
+  shoulddeletejob: true 
+  poolvmsize: standard_d3_v2
+  poolvmcount: 2
+  id: apitestpool
+  displayname: 
+  enable_inter_node_communication: True
 
 Batch:
-  batchaccountname:
-  batchaccountkey:
-  batchserviceurl:
+  batchaccountname: ngodwal12
+  batchaccountkey:  EjV1hqnp/tHVHjT4U+XBV8X7ILPWAuSL1WWhG5UEL/K40yIeYNtng81G+0CfaVS8MZ4MJu+TbdpvDYTK47wSOQ==
+  batchserviceurl:  https://ngodwal12.westcentralus.batch.azure.com
 
 Storage:
-  storageaccountname:
-  storageaccountkey:
-  storageaccountsuffix:
+  storageaccountname: mlosexecutor
+  storageaccountkey:  QQ9b/QPb0U/68A41chzcdl03hR2JlXELzGc9JxRlvdRuQW2GQmoBq0KunENGEyobsYNk/e0DmMVUaNHqpVGLEw==
+  storageaccountsuffix: 
+
+Registry:
+  registryserver:
+  username:
+  password:
+  image_driver: 
+  image_worker:
+  image_rabbitmq: 
+  image_user:
+
