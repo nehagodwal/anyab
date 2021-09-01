@@ -78,9 +78,11 @@ def create_pool(batch_client, job_id, vm_size, vm_count):
     run_task(batch_client, job, task_id, image, "-p 5672:5672 -p 15672:15672")
 
 def run_task(batch_client, job, task_id, image, container_run_optns):
+    port1 = 5672
+    port2 = 15672
     task_container_settings = batch.models.TaskContainerSettings(
     image_name=image,
-    container_run_options='-p 5672:5672 -p 15672:15672')
+    container_run_options=f'-p {port1}:{port1} -p {port2}:{port2}')
 
     task = batchmodels.TaskAddParameter(
         id=task_id,
