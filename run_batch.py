@@ -168,13 +168,15 @@ def execute_rabbitmq():
             pool_vm_size,
             pool_vm_count)
 
-        helpers.wait_for_tasks_to_complete(
-            batch_client,
-            job_id,
-            datetime.timedelta(minutes=25))
-
         tasks = batch_client.task.list(job_id)
         task_ids = [task.id for task in tasks]
+        waiting_task_id = [x for x in task_ids if 'driver' in x][0]
+
+        helpers.wait_for_task_to_complete(
+            batch_client,
+            job_id,
+            waiting_task_id,
+            datetime.timedelta(minutes=25))
 
         helpers.print_task_output(batch_client, job_id, task_ids)
     finally:
