@@ -85,6 +85,7 @@ def run_task(batch_client, job, task_id, image, container_run_optns):
 
     task = batchmodels.TaskAddParameter(
         id=task_id,
+        command_line='',
         container_settings=task_container_settings
     )
 
