@@ -14,7 +14,8 @@ Batch:
 Storage:
   storageaccountname: mlosexecutor
   storageaccountkey:  QQ9b/QPb0U/68A41chzcdl03hR2JlXELzGc9JxRlvdRuQW2GQmoBq0KunENGEyobsYNk/e0DmMVUaNHqpVGLEw==
-  storageaccountsuffix: 
+  storageaccountsuffix:
+  connectionstring: DefaultEndpointsProtocol=https;AccountName=mlosexecutor;AccountKey=y0aJT2XxDzqV0wVoQL+VinOQD0/IN/fnHIDhIM9v/NTxSemrdyu9XM2G19w4xh6wSAOXI5tSxug8wufnFHKUmQ==;EndpointSuffix=core.windows.net 
 
 Registry:
   registryserver: nhmlos.azurecr.io

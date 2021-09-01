@@ -7,6 +7,7 @@ from logging import getLogger
 import azure.batch.batch_service_client as batch
 import azure.batch.batch_auth as batchauth
 import azure.batch.models as batchmodels
+from azure.storage.blob import ContainerClient
 
 import helpers
 
@@ -105,6 +106,11 @@ def run_task(batch_client, job, task_id, image, container_run_optns=None):
 
     batch_client.task.add(job_id=job.id, task=task)
 
+def create_blob_container(container_name):
+    connection_string = config['storage']['connectionstring']
+    container_client = ContainerClient.from_connection_string(conn_str=connection_string, container_name=container_name)
+    container_client.create_container()
+
 def execute_rabbitmq():
     """Executes the sample with the specified configurations.
     :param global_config: The global configuration to use.
@@ -135,6 +141,9 @@ def execute_rabbitmq():
     # Retry 5 times -- default is 3
     batch_client.config.retry_policy.retries = 5
     job_id = helpers.generate_unique_resource_name("mlos")
+    pool_id = config['Pool']['id']
+    container_name = f'{pool_id}_{job_id}'
+    create_blob_container(container_name)
 
     try:
         create_pool(
