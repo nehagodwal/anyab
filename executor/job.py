@@ -152,14 +152,15 @@ class Job:
                     container_configuration=container_conf,
                     node_agent_sku_id='batch.node.ubuntu 20.04')
                 
-        pool_spec = batch.models.PoolSpecification(enable_inter_node_communication=True,
-                    vm_size=self.deployment_config['Pool']['poolvmsize'])
-        auto_pool_spec = batch.models.AutoPoolSpecification(
-                         pool_lifetime_option=batchmodels.PoolLifetimeOption.job, 
-                         pool=pool_spec)
+        # pool_spec = batch.models.PoolSpecification(enable_inter_node_communication=True,
+        #             vm_size=self.deployment_config['Pool']['poolvmsize'])
+        # auto_pool_spec = batch.models.AutoPoolSpecification(
+        #                  pool_lifetime_option=batchmodels.PoolLifetimeOption.job, 
+        #                  pool=pool_spec
+        #                  )
         pool_info= batch.models.PoolInformation(
                   pool_id=self.deployment_config['Pool']['id'],
-                  auto_pool_specification=auto_pool_spec
+                  #auto_pool_specification=auto_pool_spec
                 )
 
         new_pool = batch.models.PoolAddParameter(
