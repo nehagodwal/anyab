@@ -10,6 +10,7 @@ import azure.batch.batch_auth as batchauth
 import azure.batch.models as batchmodels
 from azure.storage.blob import ContainerClient
 from azure.storage.blob import BlobServiceClient
+from azure.batch.models import AutoUserSpecification, UserIdentity
 
 import helpers
 
@@ -153,21 +154,21 @@ class Job:
                 
         new_pool = batch.models.PoolAddParameter(
                     id=self.deployment_config['Pool']['id'],
+                    enable_inter_node_communication=True,
                     virtual_machine_configuration=vm_config,
                     vm_size=self.deployment_config['Pool']['poolvmsize'],
-                    enable_inter_node_communication=True,
-                    target_dedicated_nodes=self.deployment_config['Pool']['poolvmcount'],
+                    target_dedicated_nodes=self.deployment_config['Pool']['poolvmcount']
                     )
 
         batch_client.pool.add(new_pool)
 
-        pool_info= batch.models.PoolInformation(
-                pool_id=self.deployment_config['Pool']['id']
-                )
+        # pool_info= batch.models.PoolInformation(
+        #         pool_id=self.deployment_config['Pool']['id'],
+        #         )
 
         job = batchmodels.JobAddParameter(
-            id=job_id, 
-            pool_info=pool_info)
+              id=job_id
+            )
         batch_client.job.add(job)
 
         # Rabbitmq
@@ -188,6 +189,9 @@ class Job:
         
     def run_task(self, batch_client, job, task_id, image, container_run_optns=None):
         task_id = f'{job.id}_{task_id}'
+        auto_user_spec = AutoUserSpecification(scope='task', elevation_level='admin')
+        user_identity = UserIdentity(auto_user=auto_user_spec)
+
         task_container_settings = batch.models.TaskContainerSettings(
                                 image_name=image,
                                 container_run_options=container_run_optns
@@ -196,7 +200,8 @@ class Job:
         task = batchmodels.TaskAddParameter(
             id=task_id,
             command_line='',
-            container_settings=task_container_settings
+            container_settings=task_container_settings,
+            user_identity=user_identity
         )
 
         batch_client.task.add(job_id=job.id, task=task)
