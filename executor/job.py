@@ -215,9 +215,10 @@ class Job:
                                 container_run_options=container_run_optns
                                 )
 
+        print(task_id.split('-')[-1])
         if task_id.split('-')[-1] == 'rabbitmq':
             user_identity = None
-            
+
         task = batchmodels.TaskAddParameter(
             id=task_id,
             command_line='',
