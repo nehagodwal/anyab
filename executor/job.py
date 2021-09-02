@@ -5,7 +5,7 @@ from user_application.utils.shell_commands import run_cmd2
 import uuid, time, subprocess
 import pandas as pd
 
-import azure.batch.batch_service_client as batch
+import azure.batch as batch
 import azure.batch.batch_auth as batchauth
 import azure.batch.models as batchmodels
 from azure.storage.blob import ContainerClient
