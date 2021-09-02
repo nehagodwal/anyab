@@ -51,7 +51,6 @@ class Job:
             self.pool_id = self.deployment_config['Pool']['id']
             self.container_name = f'{self.pool_id}-{self.job_id}'
 
-        print(self.deployment_config)
         batch_account_key = self.deployment_config['Batch']['batchaccountkey']
         batch_account_name = self.deployment_config['Batch']['batchaccountname']
         batch_service_url = self.deployment_config['Batch']['batchserviceurl']
@@ -61,7 +60,7 @@ class Job:
         pool_vm_count = self.deployment_config['Pool']['poolvmcount']
 
         # Print the settings we are running with
-        print(self.deployment_config)
+        #print(self.deployment_config)
         
         credentials = batchauth.SharedKeyCredentials(
             batch_account_name,
@@ -86,7 +85,11 @@ class Job:
         return time.time() - self.job_start_time
     
     def get_consolidated_results(self):
-        return pd.read_csv(f'{self.pool_id}-{self.job_id}/driver/user_task_consolidated_results.csv')
+        df_results = pd.read_csv(f'{self.pool_id}-{self.job_id}/driver/user_task_consolidated_results.csv')
+        df_results.dropna(inplace=True)
+        df_results.reset_index(drop=True, inplace=True)
+        df_results = df_results[df_results.columns[1:]]
+        return df_results
 
     def status_local(self):
         """Get the status of the job

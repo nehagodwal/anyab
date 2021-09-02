@@ -72,6 +72,14 @@ class StorageClient:
         except Exception:
             print(f'Container {container_name} is not deleted. {Exception}')
 
+    def final_results(self, pool_id, job_id):
+        import pandas as pd
+        df_results = pd.read_csv(f'{pool_id}-{job_id}/driver/user_task_consolidated_results.csv')
+        df_results.dropna(inplace=True)
+        df_results.reset_index(drop=True, inplace=True)
+        df_results = df_results[df_results.columns[1:]]
+        return df_results
+
     def read_config(self, file='config.yaml'):
         """
         Read config file
