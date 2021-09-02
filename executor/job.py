@@ -152,7 +152,8 @@ class Job:
                     container_configuration=container_conf,
                     node_agent_sku_id='batch.node.ubuntu 20.04')
                 
-        pool_spec = batch.models.PoolSpecification(enable_inter_node_communication=True)
+        pool_spec = batch.models.PoolSpecification(enable_inter_node_communication=True,
+                    vm_size=self.deployment_config['Pool']['poolvmsize'])
         auto_pool_spec = batch.models.AutoPoolSpecification(pool=pool_spec)
         pool_info= batch.models.PoolInformation(
                   pool_id=self.deployment_config['Pool']['id'],
