@@ -144,7 +144,7 @@ class Job:
     #     self._launch_driver()
     #     #return self.get_job_id()
 
-    def create_pool(self, batch_client, job_id):
+    def create_pool(self, job_id):
         """Submits a job to the Azure Batch service and adds a simple task.
         :param batch_client: The batch client to use.
         :type batch_client: `batchserviceclient.BatchServiceClient`
@@ -202,27 +202,27 @@ class Job:
                     task_scheduling_policy=task_sched_policy
                     )
 
-        batch_client.pool.add(new_pool)
+        self.batch_client.pool.add(new_pool)
 
         job = batchmodels.JobAddParameter(
             id=job_id, 
             pool_info=pool_info)
-        batch_client.job.add(job)
+        self.batch_client.job.add(job)
 
         # Rabbitmq
         image = self.deployment_config['Registry']['image_rabbitmq']
         task_suffix = image.split('/')[-1]
-        self.run_task(batch_client, job, task_suffix, image, '-p 5672:5672 -p 15672:15672')
+        self.run_task(self.batch_client, job, task_suffix, image, '-p 5672:5672 -p 15672:15672')
 
         # Worker
         image = self.deployment_config['Registry']['image_worker']
         task_suffix = image.split('/')[-1]
-        self.run_task(batch_client, job, task_suffix, image, f'-v /var/run/docker.sock:/var/run/docker.sock -e CNAME={self.container_name} --privileged')
+        self.run_task(self.batch_client, job, task_suffix, image, f'-v /var/run/docker.sock:/var/run/docker.sock -e CNAME={self.container_name} --privileged')
 
         # Driver
         image = self.deployment_config['Registry']['image_driver']
         task_suffix = image.split('/')[-1]
-        self.run_task(batch_client, job, task_suffix, image, f'-e CNAME={self.container_name} --privileged')
+        self.run_task(self.batch_client, job, task_suffix, image, f'-e CNAME={self.container_name} --privileged')
 
         return new_pool
 
@@ -262,12 +262,13 @@ class Job:
 
         try:
             pool = self.create_pool(
-                self.batch_client,
                 job_id)
 
             #waiting_task_id = [x for x in task_ids if 'master' in x][0]
 
             # check if pool is created
+            print(self.batch_client.pool.get(self.pool_id))
+            print(self.batch_client.pool.get(self.pool_id).state)
             while pool.state != batchmodels.PoolState.active:
                 print(f'Checking if {self.pool_id} is complete... pool state={pool.state}')
 
@@ -279,7 +280,7 @@ class Job:
 
             #helpers.print_task_output(batch_client, job_id, task_ids)
         except Exception:
-            raise Exception
+            raise
 
 
     def delete(self):
