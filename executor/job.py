@@ -150,7 +150,10 @@ class Job:
         vm_config = batch.models.VirtualMachineConfiguration(
                     image_reference=image_ref_to_use,
                     container_configuration=container_conf,
-                    node_agent_sku_id='batch.node.ubuntu 20.04')
+                    node_agent_sku_id='batch.node.ubuntu 20.04',
+                    node_placement_configuration=batch.models.NodePlacementConfiguration(
+                                                 policy=batch.models.NodePlacementPolicyType.regional)
+                    )
                 
         # pool_spec = batch.models.PoolSpecification(enable_inter_node_communication=True,
         #             vm_size=self.deployment_config['Pool']['poolvmsize'])
@@ -163,12 +166,20 @@ class Job:
                   #auto_pool_specification=auto_pool_spec
                 )
 
+        public_ip_conf = batch.models.PublicIPAddressConfiguration(
+                         provision=batch.models.IPAddressProvisioningType.batch_managed)
+        network_conf = batch.models.NetworkConfiguration(public_ip_address_configuration=public_ip_conf)
+
+        task_sched_policy = batch.models.TaskSchedulingPolicy(
+                            node_fill_type=batch.models.ComputeNodeFillType.pack)
         new_pool = batch.models.PoolAddParameter(
                     id=self.deployment_config['Pool']['id'],
                     enable_inter_node_communication=True,
                     virtual_machine_configuration=vm_config,
                     vm_size=self.deployment_config['Pool']['poolvmsize'],
-                    target_dedicated_nodes=self.deployment_config['Pool']['poolvmcount']
+                    target_dedicated_nodes=self.deployment_config['Pool']['poolvmcount'],
+                    network_configuration=network_conf,
+                    task_scheduling_policy=task_sched_policy
                     )
 
         batch_client.pool.add(new_pool)
