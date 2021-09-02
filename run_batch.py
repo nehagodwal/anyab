@@ -64,14 +64,15 @@ def create_pool(batch_client, job_id, vm_size, vm_count):
                 id=config['Pool']['id'],
                 virtual_machine_configuration=vm_config,
                 vm_size=config['Pool']['poolvmsize'],
-                target_dedicated_nodes=config['Pool']['poolvmcount']
+                target_dedicated_nodes=config['Pool']['poolvmcount'],
+                enable_inter_node_communication=True
                 )
 
     batch_client.pool.add(new_pool)
 
     pool_info= batch.models.PoolInformation(
-               pool_id=config['Pool']['id'],
-               enable_inter_node_communication=config['Pool']['enable_inter_node_communication'])
+               pool_id=config['Pool']['id']
+               )
 
     job = batchmodels.JobAddParameter(
           id=job_id, 
