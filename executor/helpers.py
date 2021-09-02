@@ -103,7 +103,7 @@ def wait_for_tasks_to_complete(batch_client, job_id, timeout):
 
     raise TimeoutError("Timed out waiting for tasks to complete")
 
-def wait_for_task_to_complete(batch_client, job_id, pool_id, task_id, timeout):
+def wait_for_task_to_complete(batch_client, job_id, task_id, timeout):
     """Waits for all the tasks in a particular job to complete.
     :param batch_client: The batch client to use.
     :type batch_client: `batchserviceclient.BatchServiceClient`
