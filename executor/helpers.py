@@ -112,7 +112,7 @@ def waiting_for_tasks_to_complete(batch_client, job_id):
     :type timeout: `datetime.timedelta`
     """
     
-    print("Checking if all tasks are complete...")
+    print("Checking the status of the tasks...")
     tasks = batch_client.task.list(job_id)
     tasks_list = [t for t in tasks]
 
@@ -121,7 +121,7 @@ def waiting_for_tasks_to_complete(batch_client, job_id):
     
     tasks_state = [(x.id, str(x.state)) for x in tasks_list]
 
-    if incomplete_tasks:
+    if not incomplete_tasks:
         print("Job is still running, tasks are not completed....")
         print(tasks_state)
     
