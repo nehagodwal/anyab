@@ -257,6 +257,10 @@ class Job:
         container_name = self.container_name
         self.storage_client.create_blob_container(self.container_name)
 
+        # Local mounting of container
+        import subprocess
+        subprocess.check_output(['./run_mount.sh', container_name])
+
         print(f'Batch Job is being created with below information...')
         print(f'Pool_id: {self.pool_id}')
         print(f'Job_id: {self.job_id}')
