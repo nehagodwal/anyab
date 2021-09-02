@@ -103,7 +103,7 @@ def wait_for_tasks_to_complete(batch_client, job_id, timeout):
 
     raise TimeoutError("Timed out waiting for tasks to complete")
 
-def wait_for_task_to_complete(batch_client, job_id, task_id, timeout):
+def wait_for_task_to_complete(batch_client, job_id, pool_id, task_id, timeout):
     """Waits for all the tasks in a particular job to complete.
     :param batch_client: The batch client to use.
     :type batch_client: `batchserviceclient.BatchServiceClient`
@@ -111,22 +111,21 @@ def wait_for_task_to_complete(batch_client, job_id, task_id, timeout):
     :param timeout: The maximum amount of time to wait.
     :type timeout: `datetime.timedelta`
     """
+    config = read_config()
     time_to_timeout_at = datetime.datetime.now() + timeout
+    should_delete_job = config['Pool']['shoulddeletejob']
 
     waiting_task = None
     for task in batch_client.task.list(job_id):
         if task.id == task_id:
             waiting_task = task
 
-    while datetime.datetime.now() < time_to_timeout_at:
+    while (waiting_task.state != batchmodels.TaskState.completed) or (datetime.datetime.now() < time_to_timeout_at):
         print(f'Checking if {task_id} is complete...')
-        
-        if waiting_task.state == batchmodels.TaskState.completed:
-            return
-        time.sleep(5)
+        time.sleep(10)
 
-    raise TimeoutError("Timed out waiting for tasks to complete")
-
+    if datetime.datetime.now() == time_to_timeout_at:
+        raise TimeoutError("Timed out waiting for tasks to complete")
 
 def print_task_output(batch_client, job_id, task_ids, encoding=None):
     """Prints the stdout and stderr for each task specified.

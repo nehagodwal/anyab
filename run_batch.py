@@ -184,6 +184,9 @@ def execute_rabbitmq():
         if should_delete_job:
             print("Deleting job: ", job_id)
             batch_client.job.delete(job_id)
+            print("Deleting pool: ", pool_id)
+            batch_client.pool.delete(pool_id)
+
 
 
 if __name__ == '__main__':

@@ -1,0 +1,8 @@
+celery[redis]==4.*
+pandas
+numpy
+six
+omegaconf
+pyyaml
+orjson>=3,<4
+psycopg2

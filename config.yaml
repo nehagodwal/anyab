@@ -5,22 +5,21 @@ Pool:
   id: testpoolAPI
 
 Batch:
-  batchaccountname: ngodwal12
-  batchaccountkey:  EjV1hqnp/tHVHjT4U+XBV8X7ILPWAuSL1WWhG5UEL/K40yIeYNtng81G+0CfaVS8MZ4MJu+TbdpvDYTK47wSOQ==
-  batchserviceurl:  https://ngodwal12.westcentralus.batch.azure.com
+  batchaccountname: 
+  batchaccountkey:  
+  batchserviceurl:  
 
 Storage:
-  storageaccountname: mlosexecutor
-  storageaccountkey:  QQ9b/QPb0U/68A41chzcdl03hR2JlXELzGc9JxRlvdRuQW2GQmoBq0KunENGEyobsYNk/e0DmMVUaNHqpVGLEw==
+  storageaccountkey:  
   storageaccountsuffix:
-  connectionstring: DefaultEndpointsProtocol=https;AccountName=mlosexecutor;AccountKey=y0aJT2XxDzqV0wVoQL+VinOQD0/IN/fnHIDhIM9v/NTxSemrdyu9XM2G19w4xh6wSAOXI5tSxug8wufnFHKUmQ==;EndpointSuffix=core.windows.net
+  connectionstring: 
 
 Registry:
-  registryserver: nhmlos.azurecr.io
-  username: nhmlos
-  password: 4IRZYyp3QbqFKdL5A/UQeu1l1J3mZOv9
-  image_driver: nhmlos.azurecr.io/nhmlos/testdriver
-  image_worker: nhmlos.azurecr.io/nhmlos/testworker
-  image_rabbitmq: nhmlos.azurecr.io/nhmlos/rabbitmq
-  image_user: nhmlos.azurecr.io/nhmlos/user_task
+  registryserver: 
+  username: 
+  password: 
+  image_driver: 
+  image_worker: 
+  image_rabbitmq: 
+  image_user: 
 

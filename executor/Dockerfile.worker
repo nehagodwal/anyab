@@ -1,0 +1,40 @@
+FROM python:3.8
+
+# install settings
+ARG INSTALL_DIR=/opt
+
+WORKDIR ${INSTALL_DIR}
+
+RUN apt-get update \
+    && apt-get install -y wget gnupg2 unzip \
+    docker.io docker-compose \
+    emacs \
+    unzip \
+    git \
+    sudo \
+    sed \
+    ant \
+    ivy
+
+# python3 install
+RUN apt install -y python3-dev \
+    libpq-dev \
+    gcc
+
+# java install
+RUN apt install -y default-jre default-jdk
+
+## Celery worker
+###################################
+
+WORKDIR ${INSTALL_DIR}
+COPY requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
+RUN mkdir -p /opt/output
+COPY tasks.py tasks.py
+COPY tasks.env temp.env
+
+
+###################################
+
+CMD celery -A tasks worker --loglevel=INFO -f /opt/output/celery.log

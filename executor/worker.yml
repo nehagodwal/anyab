@@ -1,0 +1,20 @@
+version: '2'
+services:
+    worker:
+        build:
+            context: ${MASTER_CONTEXT}
+            dockerfile: Dockerfile.worker
+        container_name: ${WORKER_CONTAINER_NAME}
+        hostname: ${WORKER_HOST_NAME}
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /proc:/host_proc
+            - ${MASTER_CONTEXT}:/opt/executor
+            - ${JOB_MOUNT_DIR}/worker_1/task/output:/opt/oltpbench/results
+            - ${JOB_MOUNT_DIR}/worker_1/output:/opt/output
+        networks:
+            - worker-net
+
+networks:
+    worker-net:
+        driver: bridge

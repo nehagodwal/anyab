@@ -1,0 +1,72 @@
+user_image: '2'
+MLOS:
+    input_simple_hypergrid:
+        dimensions: 
+            ContinuousDimension: 
+                name: shared_buffers
+                min: 128 
+                max: 1024
+    output_simple_hypergrid:
+        dimensions: 
+            ContinuousDimension:
+                name: avg_latency
+                min: 5
+                max: 15
+        objective: avg_latency
+        minimize: True
+    bayesian_optimizer_config:
+        start: default
+        random_suggestions_fraction: 0.1
+        random_forest: True
+        random_forest_refit_sample: 1
+        random_forest_splitter: best
+        random_forest_samples_fraction_per_estimator: 0.9
+        random_forest_n_estimators: 100
+        random_forest_confidence_bound: 0.1
+    stopping_condition:
+        iteration_count: 3
+        #max_cost: 
+        #max_time:
+
+deployment: LOCAL
+source_dir: /home/azureuser/executor
+driver_setup: master.yml
+worker_setup: worker.yml
+
+LOCAL:
+  local_node_ip_address: 10.0.0.4
+  mount_point: 
+  backup_mount_point:  
+  instance_type:
+    name: local
+    cpuset_cpus_driver: 0-3
+    cpuset_cpus_workload: 4-7
+    mem_limit_driver: 8G
+    mem_limit_workload: 8G
+    deploy_dir:
+    pool_node_count: 1
+
+# AZURE_BATCH:
+#   _BATCH_ACCOUNT_NAME:
+#   _BATCH_ACCOUNT_KEY:
+#   _BATCH_ACCOUNT_URL:
+#   _STORAGE_ACCOUNT_NAME:
+#   _STORAGE_ACCOUNT_KEY:
+#   _POOL_ID:
+#   _POOL_NODE_COUNT: 
+#   _POOL_VM_SIZE:
+#   _JOB_ID:
+#   _STANDARD_OUT_FILE_NAME:
+#   mount_point:
+
+# CLOUD_LAB:
+#   master_node_ip_address: 10.10.1.1
+#   instance_type:
+#   mount_point:
+#   user:
+#   user_dir:
+#   deploy_dir:
+#   private_key_filepath:
+#   linux_packages:
+#   framework_packages:
+#   python_packages:

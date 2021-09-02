@@ -1,0 +1,21 @@
+version: '2'
+services:
+    master:
+        build:
+            context: ${MASTER_CONTEXT}
+            dockerfile: Dockerfile.master
+        container_name: ${MASTER_CONTAINER_NAME}
+        hostname: ${HOST_NAME}
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - /proc:/host_proc
+            - ${MASTER_CONTEXT}:/opt/executor
+            - ${JOB_MOUNT_DIR}/output:/opt/output
+        environment:
+            - JOB_MOUNT_DIR:${JOB_MOUNT_DIR}
+        networks:
+            - master-net
+
+networks:
+    master-net:
+        driver: bridge
