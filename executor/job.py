@@ -155,8 +155,8 @@ class Job:
                     id=self.deployment_config['Pool']['id'],
                     virtual_machine_configuration=vm_config,
                     vm_size=self.deployment_config['Pool']['poolvmsize'],
+                    enable_inter_node_communication=True,
                     target_dedicated_nodes=self.deployment_config['Pool']['poolvmcount'],
-                    enable_inter_node_communication=True
                     )
 
         batch_client.pool.add(new_pool)
@@ -178,12 +178,12 @@ class Job:
         # Worker
         image = self.deployment_config['Registry']['image_worker']
         task_suffix = image.split('/')[-1]
-        self.run_task(batch_client, job, task_suffix, image)
+        self.run_task(batch_client, job, task_suffix, image, f'-v /var/run/docker.sock:/var/run/docker.sock -e CNAME={self.container_name} --privileged')
 
         # Driver
         image = self.deployment_config['Registry']['image_driver']
         task_suffix = image.split('/')[-1]
-        self.run_task(batch_client, job, task_suffix, image)
+        self.run_task(batch_client, job, task_suffix, image, f'-e CNAME={self.container_name} --privileged')
 
         
     def run_task(self, batch_client, job, task_id, image, container_run_optns=None):
