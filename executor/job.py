@@ -154,7 +154,9 @@ class Job:
                 
         pool_spec = batch.models.PoolSpecification(enable_inter_node_communication=True,
                     vm_size=self.deployment_config['Pool']['poolvmsize'])
-        auto_pool_spec = batch.models.AutoPoolSpecification(pool_lifetime_option='job', pool=pool_spec)
+        auto_pool_spec = batch.models.AutoPoolSpecification(
+                         pool_lifetime_option=batchmodels.PoolLifetimeOption.job, 
+                         pool=pool_spec)
         pool_info= batch.models.PoolInformation(
                   pool_id=self.deployment_config['Pool']['id'],
                   auto_pool_specification=auto_pool_spec
