@@ -238,7 +238,7 @@ class Job:
 
             tasks = batch_client.task.list(job_id)
             task_ids = [task.id for task in tasks]
-            waiting_task_id = [x for x in task_ids if 'driver' in x][0]
+            waiting_task_id = [x for x in task_ids if 'master' in x][0]
 
             helpers.wait_for_task_to_complete(
                 batch_client,
