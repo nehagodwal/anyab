@@ -119,8 +119,8 @@ def wait_for_task_to_complete(batch_client, job_id, task_id, timeout):
         if task.id == task_id:
             waiting_task = task
 
-    while (waiting_task.state != batchmodels.TaskState.completed) or (datetime.datetime.now() < time_to_timeout_at):
-        print(f'Checking if {task_id} is complete...')
+    while (waiting_task.state != batchmodels.TaskState.completed):
+        print(f'Checking if {task_id} is complete... task state={waiting_task.state}')
         time.sleep(10)
 
     if datetime.datetime.now() == time_to_timeout_at:
