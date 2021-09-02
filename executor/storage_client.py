@@ -65,8 +65,12 @@ class StorageClient:
         from azure.storage.blob import ContainerClient
         container_name = f'{pool_id}-{job_id}'
         connection_string = self.deployment_config['Storage']['connectionstring']
-        container = ContainerClient.from_connection_string(conn_str=connection_string, container_name=container_name)
-        container.delete_container()
+        try:
+            container = ContainerClient.from_connection_string(conn_str=connection_string, container_name=container_name)
+            container.delete_container()
+            print(f'Container {container_name} is deleted')
+        except Exception:
+            print(f'Container {container_name} is not deleted. {Exception}')
 
     def read_config(self, file='config.yaml'):
         """
