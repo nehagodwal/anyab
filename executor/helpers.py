@@ -103,7 +103,7 @@ def wait_for_tasks_to_complete(batch_client, job_id, timeout):
 
     raise TimeoutError("Timed out waiting for tasks to complete")
 
-def waiting_for_tasks_to_complete(batch_client, job_id, timeout):
+def waiting_for_tasks_to_complete(batch_client, job_id):
     """Waits for all the tasks in a particular job to complete.
     :param batch_client: The batch client to use.
     :type batch_client: `batchserviceclient.BatchServiceClient`
@@ -111,8 +111,7 @@ def waiting_for_tasks_to_complete(batch_client, job_id, timeout):
     :param timeout: The maximum amount of time to wait.
     :type timeout: `datetime.timedelta`
     """
-    time_to_timeout_at = datetime.datetime.now() + timeout
-
+    
     print("Checking if all tasks are complete...")
     tasks = batch_client.task.list(job_id)
     print("NEHA ALL tasks: ", tasks)
