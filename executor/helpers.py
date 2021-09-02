@@ -113,8 +113,7 @@ def wait_for_task_to_complete(batch_client, job_id, task_id, timeout):
     """
     config = read_config()
     time_to_timeout_at = datetime.datetime.now() + timeout
-    should_delete_job = config['Pool']['shoulddeletejob']
-
+    
     waiting_task = None
     for task in batch_client.task.list(job_id):
         if task.id == task_id:
