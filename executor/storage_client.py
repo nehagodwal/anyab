@@ -51,6 +51,23 @@ class StorageClient:
         except:
             raise Exception(exception)
 
+    def list_blob(self, pool_id, job_id):
+        from azure.storage.blob import ContainerClient
+        container_name = f'{pool_id}-{job_id}'
+        connection_string = self.deployment_config['Storage']['connectionstring']
+        container = ContainerClient.from_connection_string(conn_str=connection_string, container_name=container_name)
+
+        blob_list = container.list_blobs()
+        for blob in blob_list:
+            print(blob.name + '\n')
+
+    def delete_container(self, pool_id, job_id):
+        from azure.storage.blob import ContainerClient
+        container_name = f'{pool_id}-{job_id}'
+        connection_string = self.deployment_config['Storage']['connectionstring']
+        container = ContainerClient.from_connection_string(conn_str=connection_string, container_name=container_name)
+        container.delete_container()
+
     def read_config(self, file='config.yaml'):
         """
         Read config file
