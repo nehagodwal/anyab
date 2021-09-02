@@ -51,6 +51,26 @@ class Job:
             self.pool_id = self.deployment_config['Pool']['id']
             self.container_name = f'{self.pool_id}-{self.job_id}'
 
+        print(self.deployment_config)
+        batch_account_key = self.deployment_config['Batch']['batchaccountkey']
+        batch_account_name = self.deployment_config['Batch']['batchaccountname']
+        batch_service_url = self.deployment_config['Batch']['batchserviceurl']
+
+        should_delete_job = self.deployment_config['Pool']['shoulddeletejob']
+        pool_vm_size = self.deployment_config['Pool']['poolvmsize']
+        pool_vm_count = self.deployment_config['Pool']['poolvmcount']
+
+        # Print the settings we are running with
+        print(self.deployment_config)
+        
+        credentials = batchauth.SharedKeyCredentials(
+            batch_account_name,
+            batch_account_key)
+
+        self.batch_client = batch.BatchServiceClient(
+            credentials,
+            batch_url=batch_service_url)
+
         #self.create_env_file()
 
     def get_job_id(self):
@@ -68,7 +88,7 @@ class Job:
     def get_consolidated_results(self):
         return pd.read_csv('MLOS_executor_dir/job_1/output/user_task_consolidated_results.csv')
 
-    def status(self):
+    def status_local(self):
         """Get the status of the job
         """
         f = subprocess.Popen(['tail','-F',"MLOS_executor_dir/job_1/output/driver.log"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)
@@ -204,6 +224,8 @@ class Job:
         task_suffix = image.split('/')[-1]
         self.run_task(batch_client, job, task_suffix, image, f'-e CNAME={self.container_name} --privileged')
 
+        return new_pool
+
         
     def run_task(self, batch_client, job, task_id, image, container_run_optns=None):
         task_id = f'{job.id}_{task_id}'
@@ -229,28 +251,9 @@ class Job:
 
     def start(self):
         # Set up the configuration
-        print(self.deployment_config)
-        batch_account_key = self.deployment_config['Batch']['batchaccountkey']
-        batch_account_name = self.deployment_config['Batch']['batchaccountname']
-        batch_service_url = self.deployment_config['Batch']['batchserviceurl']
-
-        should_delete_job = self.deployment_config['Pool']['shoulddeletejob']
-        pool_vm_size = self.deployment_config['Pool']['poolvmsize']
-        pool_vm_count = self.deployment_config['Pool']['poolvmcount']
-
-        # Print the settings we are running with
-        print(self.deployment_config)
-        
-        credentials = batchauth.SharedKeyCredentials(
-            batch_account_name,
-            batch_account_key)
-
-        batch_client = batch.BatchServiceClient(
-            credentials,
-            batch_url=batch_service_url)
 
         # Retry 5 times -- default is 3
-        batch_client.config.retry_policy.retries = 5
+        self.batch_client.config.retry_policy.retries = 5
         job_id = self.job_id
         pool_id = self.pool_id
         container_name = self.container_name
@@ -258,13 +261,15 @@ class Job:
         self.storage_client.create_blob_container(self.container_name)
 
         try:
-            self.create_pool(
-                batch_client,
+            pool = self.create_pool(
+                self.batch_client,
                 job_id)
 
-            tasks = batch_client.task.list(job_id)
-            task_ids = [task.id for task in tasks]
-            waiting_task_id = [x for x in task_ids if 'master' in x][0]
+            #waiting_task_id = [x for x in task_ids if 'master' in x][0]
+
+            # check if pool is created
+            while pool.state != batchmodels.PoolState.active:
+                print(f'Checking if {self.pool_id} is complete... pool state={pool.state}')
 
             # helpers.wait_for_task_to_complete(
             #     batch_client,
@@ -272,14 +277,21 @@ class Job:
             #     waiting_task_id,
             #     datetime.timedelta(minutes=25))
 
-            helpers.print_task_output(batch_client, job_id, task_ids)
-        finally:
-            if should_delete_job:
-                print("Deleting job: ", job_id)
-                batch_client.job.delete(job_id)
-                print("Deleting pool: ", pool_id)
-                batch_client.pool.delete(pool_id)
+            #helpers.print_task_output(batch_client, job_id, task_ids)
+        except Exception:
+            raise Exception
 
+
+    def delete(self):
+        print("Deleting job: ", self.job_id)
+        self.batch_client.job.delete(self.job_id)
+        print("Deleting pool: ", self.pool_id)
+        self.batch_client.pool.delete(self.pool_id)
+
+    def status(self):
+        tasks = self.batch_client.task.list(self.job_id)
+        task_ids = [task.id for task in tasks]
+        helpers.print_task_output(self.batch_client, self.job_id, task_ids)
 
     def _build_driver(self):
         """
