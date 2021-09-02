@@ -224,8 +224,6 @@ class Job:
         task_suffix = image.split('/')[-1]
         self.run_task(self.batch_client, job, task_suffix, image, f'-e CNAME={self.container_name} --privileged')
 
-        return new_pool
-
         
     def run_task(self, batch_client, job, task_id, image, container_run_optns=None):
         task_id = f'{job.id}_{task_id}'
@@ -265,16 +263,16 @@ class Job:
         print(f'container name: {container_name}')
 
         try:
-            pool = self.create_pool(
+            self.create_pool(
                 job_id)
 
             #waiting_task_id = [x for x in task_ids if 'master' in x][0]
 
             # check if pool is created
-            print(self.batch_client.pool.get(self.pool_id))
-            print(self.batch_client.pool.get(self.pool_id).state)
-            while pool.state != batchmodels.PoolState.active:
-                print(f'Checking if {self.pool_id} is complete... pool state={pool.state}')
+            # print(self.batch_client.pool.get(self.pool_id))
+            # print(self.batch_client.pool.get(self.pool_id).state)
+            # while pool.state != batchmodels.PoolState.active:
+            #     print(f'Checking if {self.pool_id} is complete... pool state={pool.state}')
 
             # helpers.wait_for_task_to_complete(
             #     batch_client,
@@ -294,9 +292,10 @@ class Job:
         self.batch_client.pool.delete(self.pool_id)
 
     def status(self):
-        tasks = self.batch_client.task.list(self.job_id)
-        task_ids = [task.id for task in tasks]
-        helpers.print_task_output(self.batch_client, self.job_id, task_ids)
+        # tasks = self.batch_client.task.list(self.job_id)
+        # task_ids = [task.id for task in tasks]
+        helpers.waiting_for_tasks_to_complete(self.batch_client, self.job_id)
+        #helpers.print_task_output(self.batch_client, self.job_id, task_ids)
 
     def _build_driver(self):
         """
