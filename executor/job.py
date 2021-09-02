@@ -86,7 +86,7 @@ class Job:
         return time.time() - self.job_start_time
     
     def get_consolidated_results(self):
-        return pd.read_csv('MLOS_executor_dir/job_1/output/user_task_consolidated_results.csv')
+        return pd.read_csv(f'{self.pool_id}-{self.job_id}/driver/user_task_consolidated_results.csv')
 
     def status_local(self):
         """Get the status of the job
@@ -102,22 +102,55 @@ class Job:
     def worker_task_status(self):
         """Get the status of the job
         """
-        f1 = subprocess.Popen(['tail','-F',"MLOS_executor_dir/job_1/worker_1/output/celery.log"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)                                                                                                                                                       
-        time1 = 0
-        while time1<10:
-            line1 = f1.stdout.readline()
-            print(line1)
-            time1=time1+1
+        # f1 = subprocess.Popen(['tail','-F',"MLOS_executor_dir/job_1/worker_1/output/celery.log"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)                                                                                                                                                       
+        # time1 = 0
+        # while time1<10:
+        #     line1 = f1.stdout.readline()
+        #     print(line1)
+        #     time1=time1+1
+
+        with open(f'{self.pool_id}-{self.job_id}/worker/worker.log', 'r') as fp:
+            line = fp.readline()
+            while line:
+                print(line.strip())
+                line = fp.readline()
+        fp.close()
 
     def user_task_status(self):
         """Get the status of the job
         """
-        f2 = subprocess.Popen(['tail','-F',"MLOS_executor_dir/job_1/output/user_task.log"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)                                                       
-        time2 = 0
-        while time2<10:
-            line2 = f2.stdout.readline()
-            print(line2)
-            time2=time2+1
+        # f2 = subprocess.Popen(['tail','-F',"MLOS_executor_dir/job_1/output/user_task.log"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)                                                       
+        # time2 = 0
+        # while time2<10:
+        #     line2 = f2.stdout.readline()
+        #     print(line2)
+        #     time2=time2+1
+        import os
+        workdir = f'{self.pool_id}-{self.job_id}/user_task'
+        dir_list = os.listdir(workdir)
+
+        with open(f'{self.pool_id}-{self.job_id}/user_task/{dir_list[-1]}/user_task.log', 'r') as fp:
+            line = fp.readline()
+            while line:
+                print(line.strip())
+                line = fp.readline()
+        fp.close()
+
+    def driver_task_status(self):
+        """Get the status of the job
+        """
+        # f2 = subprocess.Popen(['tail','-F',"MLOS_executor_dir/job_1/output/user_task.log"],stdout=subprocess.PIPE,stderr=subprocess.PIPE)                                                       
+        # time2 = 0
+        # while time2<10:
+        #     line2 = f2.stdout.readline()
+        #     print(line2)
+        #     time2=time2+1
+        with open(f'{self.pool_id}-{self.job_id}/driver/driver.log', 'r') as fp:
+            line = fp.readline()
+            while line:
+                print(line.strip())
+                line = fp.readline()
+        fp.close()
 
     def create_env_file(self):
         local_ip_address = self.config[self.config['deployment']]['local_node_ip_address']
@@ -270,21 +303,6 @@ class Job:
             self.create_pool(
                 job_id)
 
-            #waiting_task_id = [x for x in task_ids if 'master' in x][0]
-
-            # check if pool is created
-            # print(self.batch_client.pool.get(self.pool_id))
-            # print(self.batch_client.pool.get(self.pool_id).state)
-            # while pool.state != batchmodels.PoolState.active:
-            #     print(f'Checking if {self.pool_id} is complete... pool state={pool.state}')
-
-            # helpers.wait_for_task_to_complete(
-            #     batch_client,
-            #     job_id,
-            #     waiting_task_id,
-            #     datetime.timedelta(minutes=25))
-
-            #helpers.print_task_output(batch_client, job_id, task_ids)
         except Exception:
             raise
 
