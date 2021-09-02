@@ -2,8 +2,7 @@ Pool:
   shoulddeletejob: false 
   poolvmsize: standard_a3 #standard_d3_v2
   poolvmcount: 3
-  id: apitestpool
-  displayname: 
+  id: testpoolAPI
 
 Batch:
   batchaccountname: ngodwal12
