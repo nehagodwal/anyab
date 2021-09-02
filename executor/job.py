@@ -152,6 +152,13 @@ class Job:
                     container_configuration=container_conf,
                     node_agent_sku_id='batch.node.ubuntu 20.04')
                 
+        pool_spec = batch.models.PoolSpecification(enable_inter_node_communication=True)
+        auto_pool_spec = batch.models.AutoPoolSpecification(pool=pool_spec)
+        pool_info= batch.models.PoolInformation(
+                  pool_id=self.deployment_config['Pool']['id'],
+                  auto_pool_specification=auto_pool_spec
+                )
+
         new_pool = batch.models.PoolAddParameter(
                     id=self.deployment_config['Pool']['id'],
                     enable_inter_node_communication=True,
@@ -162,13 +169,9 @@ class Job:
 
         batch_client.pool.add(new_pool)
 
-        # pool_info= batch.models.PoolInformation(
-        #         pool_id=self.deployment_config['Pool']['id'],
-        #         )
-
         job = batchmodels.JobAddParameter(
-              id=job_id
-            )
+            id=job_id, 
+            pool_info=pool_info)
         batch_client.job.add(job)
 
         # Rabbitmq
