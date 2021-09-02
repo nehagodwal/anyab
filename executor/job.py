@@ -203,6 +203,7 @@ class Job:
 
     def start(self):
         # Set up the configuration
+        print(self.deployment_config)
         batch_account_key = self.deployment_config['Batch']['batchaccountkey']
         batch_account_name = self.deployment_config['Batch']['batchaccountname']
         batch_service_url = self.deployment_config['Batch']['batchserviceurl']
