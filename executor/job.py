@@ -257,8 +257,12 @@ class Job:
         job_id = self.job_id
         pool_id = self.pool_id
         container_name = self.container_name
-        print("container name: ", container_name)
         self.storage_client.create_blob_container(self.container_name)
+
+        print(f'Batch Job is being created with below information...')
+        print(f'Pool_id: {self.pool_id}')
+        print(f'Job_id: {self.job_id}')
+        print(f'container name: {container_name}')
 
         try:
             pool = self.create_pool(
