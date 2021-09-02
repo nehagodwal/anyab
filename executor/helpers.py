@@ -114,12 +114,15 @@ def waiting_for_tasks_to_complete(batch_client, job_id):
     
     print("Checking if all tasks are complete...")
     tasks = batch_client.task.list(job_id)
-    print("NEHA ALL tasks: ", tasks)
+    tasks_list = [t for t in tasks]
+
     incomplete_tasks = [task.id for task in tasks if
                         task.state != batchmodels.TaskState.completed]
-    tasks_state = {x:x.state for x in tasks}
+    
+    tasks_state = [(x.id, str(x.state)) for x in tasks_list]
+
     if incomplete_tasks:
-        print("All tasks are still running.....")
+        print("Job is still running, tasks are not completed....")
         print(tasks_state)
     
 def wait_for_task_to_complete(batch_client, job_id, task_id, timeout):
